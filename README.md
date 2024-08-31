@@ -5,23 +5,23 @@ Este projeto visa desenvolver um robô autônomo baseado em um iRobot Create 2, 
 
 ### Etapas do Projeto:
 
-### 1.Configuração do Hardware:
+#### 1.Configuração do Hardware:
 
-1.Instalação do sistema operacional na Orange Pi 3B.
-2.Conexão da câmera e dos sensores ultrassônicos à Orange Pi.
-3.Configuração da comunicação serial entre a Orange Pi e o iRobot Create 2.
+1. Instalação do sistema operacional na Orange Pi 3B.
+2. Conexão da câmera e dos sensores ultrassônicos à Orange Pi.
+3. Configuração da comunicação serial entre a Orange Pi e o iRobot Create 2.
 
 #### 2.Desenvolvimento do Software:
 
-**1.Aquisição de dados:** Captura de imagens da câmera e leitura dos dados dos sensores ultrassônicos.
+**1. Aquisição de dados:** Captura de imagens da câmera e leitura dos dados dos sensores ultrassônicos.
 
-**2.Processamento de imagens:** Utilização de técnicas de visão computacional para extrair informações relevantes das imagens, como detecção de obstáculos, reconhecimento de marcadores ou estimativa de profundidade.
+**2. Processamento de imagens:** Utilização de técnicas de visão computacional para extrair informações relevantes das imagens, como detecção de obstáculos, reconhecimento de marcadores ou estimativa de profundidade.
 
-**3.strução de mapas:** Criação de um mapa do ambiente a partir dos dados da câmera e dos sensores, utilizando algoritmos de SLAM (Simultaneous Localization and Mapping).
+**3. strução de mapas:** Criação de um mapa do ambiente a partir dos dados da câmera e dos sensores, utilizando algoritmos de SLAM (Simultaneous Localization and Mapping).
 
-**4.Planejamento de trajetória:** Cálculo da melhor rota para o objetivo, considerando o mapa do ambiente e as restrições do robô.
+**4. Planejamento de trajetória:** Cálculo da melhor rota para o objetivo, considerando o mapa do ambiente e as restrições do robô.
 
-**5.Controle do robô:** Envio de comandos para o iRobot Create 2 para seguir a trajetória planejada, utilizando a comunicação serial.
+**5. Controle do robô:** Envio de comandos para o iRobot Create 2 para seguir a trajetória planejada, utilizando a comunicação serial.
 
 #### 3.Integração dos Componentes:
 
