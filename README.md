@@ -5,7 +5,7 @@ Este projeto visa desenvolver um robô autônomo baseado em um iRobot Create 2, 
 
 ### Etapas do Projeto:
 
-**1.Configuração do Hardware:**
+### 1.Configuração do Hardware:
 
 1.Instalação do sistema operacional na Orange Pi 3B.
 2.Conexão da câmera e dos sensores ultrassônicos à Orange Pi.
@@ -38,24 +38,24 @@ Este projeto visa desenvolver um robô autônomo baseado em um iRobot Create 2, 
 
 #### Hardware:
 
--**Orange Pi 3B:** Processador principal, NPU para aceleração da visão computacional, portas USB para comunicação e expansão.
--**iRobot Create 2:** Plataforma robótica com sensores e atuadores básicos.
--**Conversor de Nível USB:** Garante a compatibilidade de voltagem entre a Orange Pi (3.3V) e o iRobot (5V).
--**Bateria:** Fornece energia para a Orange Pi e seus periféricos.
--**ESP32:** Microcontrolador para tarefas de baixo nível, como leitura de sensores adicionais ou controle de atuadores.
--**Sensores:** Ultrassônicos, câmera, outros sensores conforme a necessidade da aplicação.
+- **Orange Pi 3B:** Processador principal, NPU para aceleração da visão computacional, portas USB para comunicação e expansão.
+- **iRobot Create 2:** Plataforma robótica com sensores e atuadores básicos.
+- **Conversor de Nível USB:** Garante a compatibilidade de voltagem entre a Orange Pi (3.3V) e o iRobot (5V).
+- **Bateria:** Fornece energia para a Orange Pi e seus periféricos.
+- **ESP32:** Microcontrolador para tarefas de baixo nível, como leitura de sensores adicionais ou controle de atuadores.
+- **Sensores:** Ultrassônicos, câmera, outros sensores conforme a necessidade da aplicação.
 
 #### Software:
 
--**Sistema Operacional:** Raspberry Pi OS (ou outro sistema Linux compatível com a Orange Pi).
--**Linguagem de Programação:** Python 3.
--**Bibliotecas:**
--**PySerial:** Comunicação serial com o iRobot.
--**OpenCV:** Processamento de imagens, visão computacional.
--**TensorFlow/PyTorch:** Framework de deep learning para YOLO.
--**Numpy, SciPy:** Cálculos numéricos.
--**Modelo de Visão Computacional:** YOLO (You Only Look Once) para detecção de objetos em tempo real.
--**Algoritmos de Navegação:** SLAM, pathfinding (A*, RRT).
+- **Sistema Operacional:** Raspberry Pi OS (ou outro sistema Linux compatível com a Orange Pi).
+- **Linguagem de Programação:** Python 3.
+- **Bibliotecas:**
+- **PySerial:** Comunicação serial com o iRobot.
+- **OpenCV:** Processamento de imagens, visão computacional.
+- **TensorFlow/PyTorch:** Framework de deep learning para YOLO.
+- **Numpy, SciPy:** Cálculos numéricos.
+- **Modelo de Visão Computacional:** YOLO (You Only Look Once) para detecção de objetos em tempo real.
+- **Algoritmos de Navegação:** SLAM, pathfinding (A*, RRT).
 
 
 ### Estrutura do Projeto
