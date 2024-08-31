@@ -1,6 +1,6 @@
 # Navegação Autônoma com iRobot Create 2 e Visão Computacional
 
-#### Introdução
+### Introdução
 Este projeto visa desenvolver um robô autônomo baseado em um iRobot Create 2, capaz de navegar em ambientes desconhecidos e encontrar o melhor caminho para um objetivo predefinido. A inteligência do robô reside em uma Orange Pi 3B que processa dados de uma câmera e sensores ultrassônicos para construir um mapa do ambiente e planejar a trajetória. A programação é feita em Python, aproveitando as bibliotecas OpenCV para processamento de imagens e frameworks de robótica para controle do iRobot e planejamento de trajetória.
 
 ### Etapas do Projeto:
@@ -36,7 +36,7 @@ Este projeto visa desenvolver um robô autônomo baseado em um iRobot Create 2, 
 
 ### Especificação Detalhada:
 
-Hardware:
+####Hardware:
 
 **Orange Pi 3B:** Processador principal, NPU para aceleração da visão computacional, portas USB para comunicação e expansão.
 **iRobot Create 2:** Plataforma robótica com sensores e atuadores básicos.
@@ -45,9 +45,10 @@ Hardware:
 **ESP32:** Microcontrolador para tarefas de baixo nível, como leitura de sensores adicionais ou controle de atuadores.
 **Sensores:** Ultrassônicos, câmera, outros sensores conforme a necessidade da aplicação.
 
-Software:
+####Software:
 
 **Sistema Operacional:** Raspberry Pi OS (ou outro sistema Linux compatível com a Orange Pi).
+
 **Linguagem de Programação:** Python 3.
 **Bibliotecas:**
 **PySerial:** Comunicação serial com o iRobot.
@@ -58,7 +59,7 @@ Software:
 **Algoritmos de Navegação:** SLAM, pathfinding (A*, RRT).
 
 
-#### Estrutura do Projeto
+### Estrutura do Projeto
 ```
 project-root/
 │
@@ -86,7 +87,7 @@ project-root/
 3. **Parâmetros Configuráveis**:
    - Descrição de parâmetros configuráveis e suas funções está disponível no arquivo `docs/usage.md`.
 
-#### Estrutura do Código
+### Estrutura do Código
 - **Diagrama de Blocos**:
   ![Diagrama de Blocos](docs/block-diagram.png)
 
@@ -97,7 +98,7 @@ project-root/
   - `path-planning.py`: Cálculo da melhor rota para o objetivo.
   - `robot-control.py`: Controle do robô e envio de comandos para o iRobot Create 2.
 
-#### Contribuições
+### Contribuições
 1. **Como Contribuir**:
    - Faça um fork do repositório.
    - Crie uma branch para sua modificação (`git checkout -b feature/feature-name`).
@@ -108,12 +109,12 @@ project-root/
 2. **Guia de Estilo**:
    - Utilize o guia de estilo PEP 8 para Python.
 
-#### Licença
+### Licença
 Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-#### Autores
+### Autores
 - [Delio](https://github.com/DelioMg)
 
-#### Agradecimentos
+### Agradecimentos
 Agradecimentos a todos que contribuíram direta ou indiretamente para o desenvolvimento deste projeto.
 
