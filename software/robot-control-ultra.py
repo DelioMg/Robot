@@ -1,15 +1,20 @@
 import struct
 import serial
 import time
+import wiringpi as wp
 
 # Configurações de comunicação
-PORT = '/dev/ttyUSB0'  
+PORT = '/dev/ttyUSB0'  # Substitua pelo porto serial correto
 BAUDRATE = 115200
 TIMEOUT = 1
 
 # Configurações de movimento
 VELOCITYCHANGE = 200
 ROTATIONCHANGE = 300
+
+# Pinos dos sensores ultrassônicos
+TRIG_PIN = 0  # GPIO.0 (Ajuste conforme necessário)
+ECHO_PIN = 1  # GPIO.1 (Ajuste conforme necessário)
 
 # Inicializa a conexão serial
 try:
@@ -18,6 +23,11 @@ try:
 except serial.SerialException:
     print("Falha na conexão com o iRobot Create 2.")
     connection = None
+
+# Inicializa a biblioteca GPIO
+wp.wiringPiSetup()
+wp.pinMode(TRIG_PIN, wp.OUTPUT)
+wp.pinMode(ECHO_PIN, wp.INPUT)
 
 # Funções de controle
 def sendCommandRaw(command):
@@ -38,27 +48,33 @@ def drive(velocity, rotation):
     cmd = struct.pack(">Bhh", 145, vr, vl)
     sendCommandRaw(cmd)
 
-def readSensors():
-    global connection
-    if connection is not None:
-        sendCommandASCII('142 7')  # Solicita dados do pacote de colisões e quedas de roda (Packet ID 7)
-        data = connection.read(1)
-        if data:
-            return struct.unpack('B', data)[0]
-    return None
+def measure_distance():
+    # Envia um pulso de trigger
+    wp.digitalWrite(TRIG_PIN, wp.LOW)
+    time.sleep(0.02)
+    wp.digitalWrite(TRIG_PIN, wp.HIGH)
+    time.sleep(0.01)
+    wp.digitalWrite(TRIG_PIN, wp.LOW)
 
-def checkObstacles():
-    sensor_data = readSensors()
-    if sensor_data is not None:
-        bump_right = sensor_data & 0x01
-        bump_left = sensor_data & 0x02
-        wheel_drop_right = sensor_data & 0x04
-        wheel_drop_left = sensor_data & 0x08
-        if bump_right or bump_left or wheel_drop_right or wheel_drop_left:
-            print("Obstáculo detectado! Parando o robô.")
-            drive(0, 0)
-            playObstacleTone()  # Emite um beep quando um obstáculo é detectado
-            return True
+    # Espera pelo pulso de eco
+    while wp.digitalRead(ECHO_PIN) == wp.LOW:
+        pulse_start = time.time()
+
+    while wp.digitalRead(ECHO_PIN) == wp.HIGH:
+        pulse_end = time.time()
+
+    pulse_duration = pulse_end - pulse_start
+    distance = pulse_duration * 17150  # Velocidade do som é 34300 cm/s, dividido por 2
+    distance = round(distance, 2)
+
+    return distance
+
+def avoid_obstacles():
+    distance = measure_distance()
+    if distance < 20:  # Distância limite para evitar obstáculos
+        print(f"Obstáculo detectado a {distance} cm! Parando o robô.")
+        drive(0, 0)
+        return True
     return False
 
 # Funções de controle de estado
@@ -80,7 +96,6 @@ def dock():
 def reset():
     sendCommandASCII('7')
 
-# Definições de tons
 def defineTones():
     # Toque de inicialização
     sendCommandASCII('140 0 4 72 16 76 16 79 16 83 16')
@@ -108,35 +123,14 @@ def main():
 
     try:
         while True:
-            if checkObstacles():
+            if avoid_obstacles():
+                playObstacleTone()
                 time.sleep(1)  # Espera 1 segundo antes de continuar para evitar colisões repetidas
                 continue
 
-            command = input("Enter command (w/a/s/d for movement, q to quit): ").strip().lower()
-            if command == 'w':
-                drive(VELOCITYCHANGE, 0)
-            elif command == 's':
-                drive(-VELOCITYCHANGE, 0)
-            elif command == 'a':
-                drive(0, ROTATIONCHANGE)
-            elif command == 'd':
-                drive(0, -ROTATIONCHANGE)
-            elif command == 'p':
-                setPassiveMode()
-            elif command == 'f':
-                setFullMode()
-            elif command == 'c':
-                clean()
-            elif command == 'd':
-                dock()
-            elif command == 'r':
-                reset()
-            elif command == 'b':
-                playObstacleTone()
-            elif command == 'q':
-                break
-            else:
-                print("Comando não reconhecido.")
+            drive(VELOCITYCHANGE, 0)  # Continua dirigindo para frente se não há obstáculos
+
+            time.sleep(0.1)  # Ajuste conforme necessário para a taxa de verificação dos sensores
 
     except KeyboardInterrupt:
         print("Programa interrompido pelo usuário.")
