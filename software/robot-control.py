@@ -12,6 +12,9 @@ TIMEOUT = 1
 VELOCITYCHANGE = 200 # Velocidade de Movimentação frente e tras 
 ROTATIONCHANGE = 300 # Velocidade de Giro do robo
 
+# Limite de bateria baixa
+LOW_BATTERY_THRESHOLD = 0.10  # 10%
+
 # Inicializa a conexão serial
 try:
     connection = serial.Serial(PORT, baudrate=BAUDRATE, timeout=TIMEOUT)
@@ -62,12 +65,34 @@ def checkObstacles():
             return True
     return False
 
+# Função para verificar o nível da bateria
+def checkBatteryLevel():
+    global connection
+    if connection is not None:
+        sendCommandASCII('142 25')  # Solicita a carga da bateria (Packet ID 25)
+        battery_charge_data = connection.read(2)
+        sendCommandASCII('142 26')  # Solicita a capacidade total da bateria (Packet ID 26)
+        battery_capacity_data = connection.read(2)
+
+        if battery_charge_data and battery_capacity_data:
+            battery_charge = struct.unpack('>H', battery_charge_data)[0]  # Carga da bateria
+            battery_capacity = struct.unpack('>H', battery_capacity_data)[0]  # Capacidade total
+
+            if battery_capacity > 0:
+                battery_percentage = battery_charge / battery_capacity
+                print(f"Nível da bateria: {battery_percentage * 100:.2f}%")
+                if battery_percentage < LOW_BATTERY_THRESHOLD:
+                    playLowBatteryTone()  # Toca o aviso de bateria baixa
+                return battery_percentage
+    return None
+
 # Definições de tons
 def defineTones():
     sendCommandASCII('140 0 4 72 16 76 16 79 16 83 16')  # Toque de inicialização
     sendCommandASCII('140 1 4 60 16 64 16 67 16 72 16')  # Toque de desligar
     sendCommandASCII('140 2 1 55 32')  # Toque de obstáculo
     sendCommandASCII('140 3 1 69 32')  # Toque de buzina - nota A4 com duração de 0.5 segundos
+    sendCommandASCII('140 4 2 60 32 55 32')  # Toque de bateria baixa - duas notas
 
 
 def playStartupTone():
@@ -82,8 +107,8 @@ def playObstacleTone():
 def playHorn():
     sendCommandASCII('141 3')  # Toca a buzina (música 3)
 
-def playbaterry():
-    sendCommandASCII('141 3')  # Avisa Bateria Baixa (música 4)
+def playLowBatteryTone():
+    sendCommandASCII('141 4')  # Avisa Bateria Baixa (música 4)
 
 
 # Funções de controle de estado
@@ -123,8 +148,13 @@ def main():
             while True:
                 # Verifica continuamente a presença de obstáculos
                 if checkObstacles():
+                    drive(-VELOCITYCHANGE, 0)  # Move para trás
                     time.sleep(1)  # Espera 1 segundo após detectar um obstáculo antes de continuar
+                    stop()
                     continue  # Volta para o loop sem processar mais comandos enquanto o obstáculo não for resolvido
+
+                # Verifica o nível da bateria continuamente
+                checkBatteryLevel()
 
                  # Verifica quais teclas estão sendo pressionadas
                 if keyboard.is_pressed('w'):
