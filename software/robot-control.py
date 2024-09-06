@@ -1,15 +1,16 @@
 import struct
 import serial
 import time
+import keyboard
 
 # Configurações de comunicação
-PORT = '/dev/ttyUSB0'  
+PORT = '/dev/ttyUSB0' #Usb serial   
 BAUDRATE = 115200
 TIMEOUT = 1
 
 # Configurações de movimento
-VELOCITYCHANGE = 200
-ROTATIONCHANGE = 300
+VELOCITYCHANGE = 200 # Velocidade de Movimentação frente e tras 
+ROTATIONCHANGE = 300 # Velocidade de Giro do robo
 
 # Inicializa a conexão serial
 try:
@@ -56,10 +57,34 @@ def checkObstacles():
         wheel_drop_left = sensor_data & 0x08
         if bump_right or bump_left or wheel_drop_right or wheel_drop_left:
             print("Obstáculo detectado! Parando o robô.")
-            drive(0, 0)
+            stop()  # Para o robô imediatamente
             playObstacleTone()  # Emite um beep quando um obstáculo é detectado
             return True
     return False
+
+# Definições de tons
+def defineTones():
+    sendCommandASCII('140 0 4 72 16 76 16 79 16 83 16')  # Toque de inicialização
+    sendCommandASCII('140 1 4 60 16 64 16 67 16 72 16')  # Toque de desligar
+    sendCommandASCII('140 2 1 55 32')  # Toque de obstáculo
+    sendCommandASCII('140 3 1 69 32')  # Toque de buzina - nota A4 com duração de 0.5 segundos
+
+
+def playStartupTone():
+    sendCommandASCII('141 0')  # Toca o tom de Inicialização (música 0)
+
+def playPowerOffTone():
+    sendCommandASCII('141 1')  # Toca o tom de Desligamento (música 1)
+
+def playObstacleTone():
+    sendCommandASCII('141 2')  # Toca o tom de obstáculo (música 2)
+
+def playHorn():
+    sendCommandASCII('141 3')  # Toca a buzina (música 3)
+
+def playbaterry():
+    sendCommandASCII('141 3')  # Avisa Bateria Baixa (música 4)
+
 
 # Funções de controle de estado
 def setPassiveMode():
@@ -80,23 +105,6 @@ def dock():
 def reset():
     sendCommandASCII('7')
 
-# Definições de tons
-def defineTones():
-    # Toque de inicialização
-    sendCommandASCII('140 0 4 72 16 76 16 79 16 83 16')
-    # Toque de ligar
-    sendCommandASCII('140 1 4 60 16 64 16 67 16 72 16')
-    # Toque de obstáculo
-    sendCommandASCII('140 2 1 55 32')
-
-def playStartupTone():
-    sendCommandASCII('141 0')
-
-def playPowerOnTone():
-    sendCommandASCII('141 1')
-
-def playObstacleTone():
-    sendCommandASCII('141 2')
 
 # Função principal
 def main():
@@ -107,38 +115,50 @@ def main():
     playStartupTone()
 
     try:
-        while True:
-            if checkObstacles():
-                time.sleep(1)  # Espera 1 segundo antes de continuar para evitar colisões repetidas
-                continue
+            print("Precione 1 para modo Passivo, 2 para Full mode, 3 modo SafeMode, 4 ClearMode e 5 para Dockmode.")
+            print("Precione Espaço para buzina e R para Resetar e Q para sair.")
+            print("Precione W/A/S/D para Movimentar: ")
+            
 
-            command = input("Enter command (w/a/s/d for movement, q to quit): ").strip().lower()
-            if command == 'w':
-                drive(VELOCITYCHANGE, 0)
-            elif command == 's':
-                drive(-VELOCITYCHANGE, 0)
-            elif command == 'a':
-                drive(0, ROTATIONCHANGE)
-            elif command == 'd':
-                drive(0, -ROTATIONCHANGE)
-            elif command == 'p':
-                setPassiveMode()
-            elif command == 'f':
-                setFullMode()
-            elif command == 'c':
-                clean()
-            elif command == 'd':
-                dock()
-            elif command == 'r':
-                reset()
-            elif command == 'b':
-                playObstacleTone()
-            elif command == 'q':
-                break
-            else:
-                print("Comando não reconhecido.")
+            while True:
+                # Verifica continuamente a presença de obstáculos
+                if checkObstacles():
+                    time.sleep(1)  # Espera 1 segundo após detectar um obstáculo antes de continuar
+                    continue  # Volta para o loop sem processar mais comandos enquanto o obstáculo não for resolvido
 
-    except KeyboardInterrupt:
+                 # Verifica quais teclas estão sendo pressionadas
+                if keyboard.is_pressed('w'):
+                    drive(VELOCITYCHANGE, 0)  # Move para frente
+                elif keyboard.is_pressed('s'):
+                    drive(-VELOCITYCHANGE, 0)  # Move para trás
+                elif keyboard.is_pressed('a'):
+                    drive(0, ROTATIONCHANGE)  # Gira à esquerda
+                elif keyboard.is_pressed('d'):
+                    drive(0, -ROTATIONCHANGE)  # Gira à direita
+                elif keyboard.is_pressed('1'):
+                    setPassiveMode()
+                elif keyboard.is_pressed('2'):
+                    setFullMode()
+                elif keyboard.is_pressed('3'):
+                    setSafeMode()
+                elif keyboard.is_pressed('4'):
+                    clean()
+                elif keyboard.is_pressed('5'):
+                    dock()
+                elif keyboard.is_pressed('r'):
+                    reset()
+                elif keyboard.is_pressed('space'):
+                    playHorn()  # Toca a buzina quando 'espaço' é pressionado
+                else:
+                    stop()  # Para quando nenhuma tecla está pressionada
+
+                if keyboard.is_pressed('q'):
+                    print("Saindo do programa.")
+                    break
+
+                time.sleep(0.1)  # Atraso para não sobrecarregar o loop
+
+       except KeyboardInterrupt:
         print("Programa interrompido pelo usuário.")
     finally:
         if connection is not None:

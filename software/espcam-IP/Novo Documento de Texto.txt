@@ -1,0 +1,1 @@
+https://randomnerdtutorials.com/esp32-cam-ov2640-camera-settings/
