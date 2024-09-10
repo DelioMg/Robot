@@ -42,6 +42,9 @@ def drive(velocity, rotation):
     cmd = struct.pack(">Bhh", 145, vr, vl)
     sendCommandRaw(cmd)
 
+def stop():
+    drive(0, 0)  # Para o robô enviando velocidade zero para frente/trás e rotação
+
 def readSensors():
     global connection
     if connection is not None:
@@ -140,7 +143,7 @@ def main():
     playStartupTone()
 
     try:
-            print("Precione 1 para modo Passivo, 2 para Full mode, 3 modo SafeMode, 4 ClearMode e 5 para Dockmode.")
+            print("Precione 1 para modo Passivo, 2 para modo Full, 3 modo SafeMode, 4 ClearMode e 5 para Dockmode.")
             print("Precione Espaço para buzina e R para Resetar e Q para sair.")
             print("Precione W/A/S/D para Movimentar: ")
             
@@ -188,7 +191,7 @@ def main():
 
                 time.sleep(0.1)  # Atraso para não sobrecarregar o loop
 
-       except KeyboardInterrupt:
+    except KeyboardInterrupt:
         print("Programa interrompido pelo usuário.")
     finally:
         if connection is not None:
