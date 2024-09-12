@@ -151,7 +151,7 @@ def main():
             while True:
                 # Verifica continuamente a presença de obstáculos
                 if checkObstacles():
-                    drive(-VELOCITYCHANGE, 0)  # Move para trás
+                    #drive(-VELOCITYCHANGE, 0)  # Move para trás
                     time.sleep(0.5)  # Espera 1 segundo após detectar um obstáculo antes de continuar
                     stop()
                     continue  # Volta para o loop sem processar mais comandos enquanto o obstáculo não for resolvido
@@ -162,12 +162,16 @@ def main():
                  # Verifica quais teclas estão sendo pressionadas
                 if keyboard.is_pressed('w'):
                     drive(VELOCITYCHANGE, 0)  # Move para frente
+                    stop()
                 elif keyboard.is_pressed('s'):
                     drive(-VELOCITYCHANGE, 0)  # Move para trás
+                    stop()
                 elif keyboard.is_pressed('a'):
                     drive(0, ROTATIONCHANGE)  # Gira à esquerda
+                    stop()
                 elif keyboard.is_pressed('d'):
                     drive(0, -ROTATIONCHANGE)  # Gira à direita
+                    stop()
                 elif keyboard.is_pressed('1'):
                     setPassiveMode()
                 elif keyboard.is_pressed('2'):
@@ -182,8 +186,8 @@ def main():
                     reset()
                 elif keyboard.is_pressed('space'):
                     playHorn()  # Toca a buzina quando 'espaço' é pressionado
-                else:
-                    stop()  # Para quando nenhuma tecla está pressionada
+                #else:
+                 #   stop()  # Para quando nenhuma tecla está pressionada
 
                 if keyboard.is_pressed('q'):
                     print("Saindo do programa.")

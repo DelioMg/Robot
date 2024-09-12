@@ -155,7 +155,7 @@ def main():
                 # Verifica o nível da bateria continuamente
                 checkBatteryLevel()
 
-                command = input("Insira").strip().lower()
+                command = input("Comando:").strip().lower()
                 if command == 'w':
                     drive(VELOCITYCHANGE, 0)
                     stop()
@@ -180,7 +180,7 @@ def main():
                     dock()
                 elif command == 'r':
                     reset()
-                elif command == 'space':
+                elif command == 'b':
                     playHorn()
                 elif command == 'q':
                     break
