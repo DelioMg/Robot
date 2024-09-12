@@ -1,15 +1,14 @@
 import struct
 import serial
 import time
-import keyboard
 
 # Configurações de comunicação
-PORT = '/dev/ttyUSB0' #Usb serial   
+PORT = '/dev/ttyUSB0'  
 BAUDRATE = 115200
 TIMEOUT = 1
 
 # Configurações de movimento
-VELOCITYCHANGE = 200 # Velocidade de Movimentação frente e tras 
+VELOCITYCHANGE = 200 # Velocidade de Movimentação frente e tras
 ROTATIONCHANGE = 300 # Velocidade de Giro do robo
 
 # Limite de bateria baixa
@@ -18,9 +17,9 @@ LOW_BATTERY_THRESHOLD = 0.10  # 10%
 # Inicializa a conexão serial
 try:
     connection = serial.Serial(PORT, baudrate=BAUDRATE, timeout=TIMEOUT)
-    print("Conectado ao iRobot Create 2!")
+    print("Conectado com sucesso")
 except serial.SerialException:
-    print("Falha na conexão com o iRobot Create 2.")
+    print("Falha ao se conectar.")
     connection = None
 
 # Funções de controle
@@ -63,7 +62,7 @@ def checkObstacles():
         wheel_drop_left = sensor_data & 0x08
         if bump_right or bump_left or wheel_drop_right or wheel_drop_left:
             print("Obstáculo detectado! Parando o robô.")
-            stop()  # Para o robô imediatamente
+            drive(0, 0)
             playObstacleTone()  # Emite um beep quando um obstáculo é detectado
             return True
     return False
@@ -113,7 +112,6 @@ def playHorn():
 def playLowBatteryTone():
     sendCommandASCII('141 4')  # Avisa Bateria Baixa (música 4)
 
-
 # Funções de controle de estado
 def setPassiveMode():
     sendCommandASCII('128')
@@ -133,7 +131,6 @@ def dock():
 def reset():
     sendCommandASCII('7')
 
-
 # Função principal
 def main():
     setPassiveMode()
@@ -146,12 +143,11 @@ def main():
             print("Precione 1 para modo Passivo, 2 para modo Full, 3 modo SafeMode, 4 ClearMode e 5 para Dockmode.")
             print("Precione Espaço para buzina e R para Resetar e Q para sair.")
             print("Precione W/A/S/D para Movimentar: ")
-            
-
+    
             while True:
                 # Verifica continuamente a presença de obstáculos
                 if checkObstacles():
-                    drive(-VELOCITYCHANGE, 0)  # Move para trás
+                    #drive(-VELOCITYCHANGE, 0)  # Move para trás
                     time.sleep(0.5)  # Espera 1 segundo após detectar um obstáculo antes de continuar
                     stop()
                     continue  # Volta para o loop sem processar mais comandos enquanto o obstáculo não for resolvido
@@ -159,40 +155,41 @@ def main():
                 # Verifica o nível da bateria continuamente
                 checkBatteryLevel()
 
-                 # Verifica quais teclas estão sendo pressionadas
-                if keyboard.is_pressed('w'):
-                    drive(VELOCITYCHANGE, 0)  # Move para frente
-                elif keyboard.is_pressed('s'):
-                    drive(-VELOCITYCHANGE, 0)  # Move para trás
-                elif keyboard.is_pressed('a'):
-                    drive(0, ROTATIONCHANGE)  # Gira à esquerda
-                elif keyboard.is_pressed('d'):
-                    drive(0, -ROTATIONCHANGE)  # Gira à direita
-                elif keyboard.is_pressed('1'):
+                command = input("Insira").strip().lower()
+                if command == 'w':
+                    drive(VELOCITYCHANGE, 0)
+                    stop()
+                elif command == 's':
+                    drive(-VELOCITYCHANGE, 0)
+                    stop()
+                elif command == 'a':
+                    drive(0, ROTATIONCHANGE)
+                    stop()
+                elif command == 'd':
+                    drive(0, -ROTATIONCHANGE)
+                    stop()
+                elif command == '1':
                     setPassiveMode()
-                elif keyboard.is_pressed('2'):
+                elif command == '2':
                     setFullMode()
-                elif keyboard.is_pressed('3'):
-                    setSafeMode()
-                elif keyboard.is_pressed('4'):
+                elif command == '3':
+                    setSafeMode()    
+                elif command == '4':
                     clean()
-                elif keyboard.is_pressed('5'):
+                elif command == '5':
                     dock()
-                elif keyboard.is_pressed('r'):
+                elif command == 'r':
                     reset()
-                elif keyboard.is_pressed('space'):
-                    playHorn()  # Toca a buzina quando 'espaço' é pressionado
-                else:
-                    stop()  # Para quando nenhuma tecla está pressionada
-
-                if keyboard.is_pressed('q'):
-                    print("Saindo do programa.")
+                elif command == 'space':
+                    playHorn()
+                elif command == 'q':
                     break
-
-                time.sleep(0.1)  # Atraso para não sobrecarregar o loop
+                else:
+                    print("Comando não reconhecido.")
 
     except KeyboardInterrupt:
         print("Programa interrompido pelo usuário.")
+        playPowerOffTone()
     finally:
         if connection is not None:
             connection.close()
