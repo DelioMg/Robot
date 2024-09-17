@@ -1,7 +1,3 @@
-Aqui está o **README.md** reescrito para o seu projeto de robô seguidor de pessoa usando YOLOv5s:
-
----
-
 # Robô Seguidor de Pessoa com iRobot Create 2 e YOLOv5s
 
 ### Introdução
