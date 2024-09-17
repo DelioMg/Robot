@@ -4,13 +4,13 @@ import time
 import keyboard
 
 # Configurações de comunicação
-PORT = '/dev/ttyUSB0' #Usb serial   
+PORT = '/dev/ttyUSB0'  # Usb serial   
 BAUDRATE = 115200
 TIMEOUT = 1
 
 # Configurações de movimento
-VELOCITYCHANGE = 200 # Velocidade de Movimentação frente e tras 
-ROTATIONCHANGE = 300 # Velocidade de Giro do robo
+VELOCITYCHANGE = 200  # Velocidade de Movimentação frente e tras 
+ROTATIONCHANGE = 300  # Velocidade de Giro do robô
 
 # Limite de bateria baixa
 LOW_BATTERY_THRESHOLD = 0.10  # 10%
@@ -143,57 +143,78 @@ def main():
     playStartupTone()
 
     try:
-            print("Precione 1 para modo Passivo, 2 para modo Full, 3 modo SafeMode, 4 ClearMode e 5 para Dockmode.")
-            print("Precione Espaço para buzina e R para Resetar e Q para sair.")
-            print("Precione W/A/S/D para Movimentar: ")
-            
+        playStartupTone()
+        print("Precione 1 para modo Passivo, 2 para modo Full, 3 modo SafeMode, 4 ClearMode e 5 para Dockmode.")
+        print("Precione Espaço para buzina e R para Resetar e Q para sair.")
+        print("Precione as setas do teclado para Movimentar: ")
 
-            while True:
-                # Verifica continuamente a presença de obstáculos
-                if checkObstacles():
-                    #drive(-VELOCITYCHANGE, 0)  # Move para trás
-                    time.sleep(0.5)  # Espera 1 segundo após detectar um obstáculo antes de continuar
-                    stop()
-                    continue  # Volta para o loop sem processar mais comandos enquanto o obstáculo não for resolvido
+        # Variáveis para controlar o estado do robô
+        moving = False
+        turning = False
 
-                # Verifica o nível da bateria continuamente
-                checkBatteryLevel()
+        while True:
+            # Verifica continuamente a presença de obstáculos
+            if checkObstacles():
+                drive(-VELOCITYCHANGE, 0)  # Move para trás
+                time.sleep(0.3)  # Espera 0.3 segundos após detectar um obstáculo antes de continuar
+                stop()
+                continue  # Volta para o loop sem processar mais comandos enquanto o obstáculo não for resolvido
 
-                 # Verifica quais teclas estão sendo pressionadas
-                if keyboard.is_pressed('w'):
+            # Verifica o nível da bateria continuamente
+            checkBatteryLevel()
+
+            # Verifica quais teclas estão sendo pressionadas
+            if keyboard.is_pressed('up'):
+                if not moving or not turning:
                     drive(VELOCITYCHANGE, 0)  # Move para frente
-                    stop()
-                elif keyboard.is_pressed('s'):
+                    moving = True
+                    turning = False
+                continue
+            elif keyboard.is_pressed('down'):
+                if not moving or not turning:
                     drive(-VELOCITYCHANGE, 0)  # Move para trás
-                    stop()
-                elif keyboard.is_pressed('a'):
+                    moving = True
+                    turning = False
+                continue
+            elif keyboard.is_pressed('left'):
+                if not turning:
                     drive(0, ROTATIONCHANGE)  # Gira à esquerda
-                    stop()
-                elif keyboard.is_pressed('d'):
+                    turning = True
+                    moving = False
+                continue
+            elif keyboard.is_pressed('right'):
+                if not turning:
                     drive(0, -ROTATIONCHANGE)  # Gira à direita
+                    turning = True
+                    moving = False
+                continue
+            else:
+                # Se nenhuma tecla de movimento estiver pressionada, pare o robô
+                if moving or turning:
                     stop()
-                elif keyboard.is_pressed('1'):
-                    setPassiveMode()
-                elif keyboard.is_pressed('2'):
-                    setFullMode()
-                elif keyboard.is_pressed('3'):
-                    setSafeMode()
-                elif keyboard.is_pressed('4'):
-                    clean()
-                elif keyboard.is_pressed('5'):
-                    dock()
-                elif keyboard.is_pressed('r'):
-                    reset()
-                elif keyboard.is_pressed('space'):
-                    playHorn()  # Toca a buzina quando 'espaço' é pressionado
-                #else:
-                 #   stop()  # Para quando nenhuma tecla está pressionada
+                    moving = False
+                    turning = False
 
-                if keyboard.is_pressed('q'):
-                    print("Saindo do programa.")
-                    break
+            # Comandos adicionais
+            if keyboard.is_pressed('1'):
+                setPassiveMode()
+            elif keyboard.is_pressed('2'):
+                setFullMode()
+            elif keyboard.is_pressed('3'):
+                setSafeMode()
+            elif keyboard.is_pressed('4'):
+                clean()
+            elif keyboard.is_pressed('5'):
+                dock()
+            elif keyboard.is_pressed('r'):
+                reset()
+            elif keyboard.is_pressed('space'):
+                playHorn()  # Toca a buzina quando 'espaço' é pressionado
+            elif keyboard.is_pressed('q'):
+                print("Saindo do programa.")
+                break
 
-                time.sleep(0.1)  # Atraso para não sobrecarregar o loop
+            time.sleep(0.1)  # Atraso para não sobrecarregar o loop
 
     except KeyboardInterrupt:
         print("Programa interrompido pelo usuário.")
