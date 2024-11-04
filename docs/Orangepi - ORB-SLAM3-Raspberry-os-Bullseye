@@ -1,0 +1,134 @@
+# OrangePi - Installation guide for ORB-SLAM3 on Raspberry-os server Bullseye
+
+Install all liberay dependencies.
+```shell
+
+sudo apt-get install git libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev
+
+
+```
+---
+
+### Install Pangolin 
+```shell
+
+
+git clone https://github.com/stevenlovegrove/Pangolin
+cd Pangolin
+./scripts/install_prerequisites.sh recommended
+cmake -B build -GNinja
+cmake --build build
+```
+
+---
+
+### Install graphical interface
+
+I chose xfce for the graphical interface
+
+```shell
+sudo apt update
+sudo apt install xfce4
+```
+Configure the System to Start in XFCE
+```shell
+sudo nano /etc/xdg/xfce4/xinitrc
+```
+Add (or confirm) the line below to ensure that XFCE will be the default interface:
+```shell
+exec startxfce4
+```
+
+Configure autologon
+```shell
+sudo raspi-config
+```
+System Options > Boot / Auto Login
+---
+
+### Install OpenCV 4.6.0
+The ORB-SLAM 3 was test by  
+```shell
+wget https://github.com/Qengineering/Install-OpenCV-Raspberry-Pi-32-bits/raw/main/OpenCV-4-5-5.sh
+sudo chmod 755 ./OpenCV-4-5-5.sh
+./OpenCV-4-5-5.sh
+```
+---
+
+### ORB-SLAM 3
+
+```shell
+cd ~
+git clone https://github.com/UZ-SLAMLab/ORB_SLAM3.git 
+cd ORB_SLAM3
+sed -i 's/++11/++14/g' CMakeLists.txt
+```
+
+Recomendado ter 8GB de RAM, caso não tenha pode trava a build tendo que modificar o build.sh para make -j2 ou criar uma partição swap 
+```shell
+./build.sh
+```
+to install  
+
+---
+
+
+# 1. Download test datasets
+
+```shell
+cd ~
+mkdir -p Datasets/EuRoc
+cd Datasets/EuRoc/
+wget -c http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.zip
+mkdir MH01
+unzip MH_01_easy.zip -d MH01/
+
+```
+Similar for another datasets in EuRoc see here [https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets]
+
+
+# 2. Run simulation 
+```shell
+cd ~/Dev/ORB_SLAM3
+
+# Pick of them below that you want to run
+
+# Mono
+./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Monocular/EuRoC_TimeStamps/MH01.txt dataset-MH01_mono
+
+# Mono + Inertial
+./Examples/Monocular-Inertial/mono_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular-Inertial/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_monoi
+
+# Stereo
+./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereo
+
+# Stereo + Inertial
+./Examples/Stereo-Inertial/stereo_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo-Inertial/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereoi
+```
+
+# 3 Validation Estimate vs Ground True
+We need numpy and matplotlib installed in pytho2.7. But Ubuntu20.04 has not pip2.7
+```shell
+sudo apt install curl
+cd ~/Desktop
+curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py
+sudo python2 get-pip.py
+pip2.7 install numpy matplotlib
+```
+
+**Run and plot Ground true**
+```
+cd ~/Dev/ORB_SLAM3
+
+./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereo
+```
+
+**Plot estimate vs Ground true**
+```
+cd ~/Dev/ORB_SLAM3
+
+python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH01_GT.txt f_dataset-MH01_stereo.txt --plot MH01_stereo.pdf
+```
+
+open the pdf `MH01_stereo.pdf` and you see the 
+
