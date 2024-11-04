@@ -1,6 +1,5 @@
-# Installation guide for ORB-SLAM on UBUNTU 20LTS OrangePi
+# OrangePi - Installation guide for ORB-SLAM on UBUNTU 20.04
 
-# 1. Installation of ORB-SLAM 3 on a fresh installed Ubuntu 22.04
 Install all liberay dependencies.
 ```shell
 
