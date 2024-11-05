@@ -1,4 +1,6 @@
-# OrangePi - Installation guide for ORB-SLAM on UBUNTU 20.04
+# Installation guide for ORB-SLAM OrangePi and Raspberry PI 4
+
+This tutorial was made on Ubuntu 20.04  and Raspberry OS Bullseye and Bookworm
 
 Install all liberay dependencies.
 ```shell
@@ -32,6 +34,7 @@ cd build/
 cmake ..
 cmake --build .
 sudo make install
+cd ..
 rm v0.8.zip
 ```
 
@@ -72,11 +75,11 @@ pkg-config --modversion opencv4
 ```shell
 wget https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.zip
 unzip boost_1_78_0.zip
-rm boost_1_78_0.zip
 cd boost_1_78_0
 sudo ./bootstrap.sh
 sudo ./b2 install
 cd ..
+rm boost_1_78_0.zip
 ```
 ---
 
@@ -91,13 +94,13 @@ cd /usr/local/include
 ### ORB-SLAM 3
 
 ```shell
-cd ~/Dev
+cd ~
 git clone https://github.com/UZ-SLAMLab/ORB_SLAM3.git 
 cd ORB_SLAM3
 sed -i 's/++11/++14/g' CMakeLists.txt
 ```
 
-Recomendado ter 8GB de RAM, caso não tenha pode trava a build tendo que modificar o build.sh para make -j2 ou criar uma partição swap 
+It is recommended to have 8GB of RAM, if not, it may cause the build to crash, having to modify build.sh to make -j2 or create a swap partition
 ```shell
 ./build.sh
 ```
@@ -121,7 +124,7 @@ Similar for another datasets in EuRoc see here [https://projects.asl.ethz.ch/dat
 
 # 3. Run simulation 
 ```shell
-cd ~/Dev/ORB_SLAM3
+cd ~/ORB_SLAM3
 
 # Pick of them below that you want to run
 
@@ -140,24 +143,33 @@ cd ~/Dev/ORB_SLAM3
 
 # 4 Validation Estimate vs Ground True
 We need numpy and matplotlib installed in pytho2.7. But Ubuntu20.04 has not pip2.7
+
+Install all liberay dependencies.
 ```shell
-sudo apt install curl
+sudo apt-get install curl
+sudo apt-get install python2.7-dev libfreetype6-dev libpng-dev pkg-config
+sudo apt-get install libblas-dev liblapack-dev gfortran
+```
+---
+```shell
+
 cd ~/Desktop
-curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
 sudo python2 get-pip.py
-pip2.7 install numpy matplotlib
+sudo pip2 install --upgrade setuptools wheel
+sudo pip2 install numpy matplotlib
 ```
 
 **Run and plot Ground true**
 ```
-cd ~/Dev/ORB_SLAM3
+cd ~/ORB_SLAM3
 
 ./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereo
 ```
 
 **Plot estimate vs Ground true**
 ```
-cd ~/Dev/ORB_SLAM3
+cd ~/ORB_SLAM3
 
 python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH01_GT.txt f_dataset-MH01_stereo.txt --plot MH01_stereo.pdf
 ```
