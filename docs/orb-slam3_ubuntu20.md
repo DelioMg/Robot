@@ -142,13 +142,12 @@ cd ~/ORB_SLAM3
 ```
 
 # 4 Validation Estimate vs Ground True
-We need numpy and matplotlib installed in pytho2.7. But Ubuntu20.04 has not pip2.7
+We need numpy and matplotlib installed in pytho2.7.
 
 Install all liberay dependencies.
 ```shell
 sudo apt-get install curl
-sudo apt-get install python2.7-dev libfreetype6-dev libpng-dev pkg-config
-sudo apt-get install libblas-dev liblapack-dev gfortran
+sudo apt-get install python2.7-dev libfreetype6-dev libblas-dev   
 ```
 ---
 ```shell
