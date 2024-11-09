@@ -11,9 +11,9 @@ sudo apt-get install libeigen3-dev
 sudo apt-get install git libgtk2.0-dev libcanberra-gtk-module
 sudo apt -y install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libopenexr-dev libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev
 sudo apt-get install libtiff-dev libopenblas-dev liblapack-dev libgtk-3-dev
-sudo apt-get install build-essential cmake git pkg-config libatlas-base-dev gfortran libjpeg-dev libpng-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev
+sudo apt-get install pkg-config libatlas-base-dev gfortran libjpeg-dev libpng-dev
 sudo apt install libdc1394-dev libavresample-dev libgflags-dev libgoogle-glog-dev libhdf5-dev tesseract-ocr libtesseract-dev
-sudo apt-get install python2 python-dev python-numpy libtbb2 libtbb-dev libjasper-dev
+sudo apt-get install python2 python-dev-is-python2 python-numpy libtbb2 libtbb-dev
 sudo apt-get install libglew-dev libboost-all-dev libssl-dev
 
 
